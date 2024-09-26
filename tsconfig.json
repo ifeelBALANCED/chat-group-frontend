@@ -22,6 +22,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
+    "baseUrl": "./",
     "jsxImportSource": "solid-js",
     "types": [
       "node",
@@ -31,12 +32,12 @@
     "isolatedModules": true,
     "paths": {
       "~/*": [
-        "./src/*"
+        "src/*"
       ]
     }
   },
   "include": [
-    "src/**/*",
+    "src",
     "vite.config.mts"
   ],
   "exclude": [

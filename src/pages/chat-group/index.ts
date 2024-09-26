@@ -1,0 +1,1 @@
+export { ChatGroupPage } from './view';
