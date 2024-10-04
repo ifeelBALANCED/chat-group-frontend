@@ -1,2 +1,3 @@
 export { LogoutIcon } from './logout';
-export { SentRequestButton } from './sent-request';
+export { CreateNewChatIcon } from './new-chat-icon';
+export { SentRequestIcon } from './sent-request-icon';
