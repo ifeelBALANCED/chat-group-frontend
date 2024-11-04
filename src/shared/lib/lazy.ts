@@ -1,6 +1,6 @@
-import { Component, lazy } from 'solid-js';
+import { lazy } from 'react';
 
-export const lazyImport = <T extends Record<string, Component<unknown>>>(
+export const lazyImport = <T extends Record<string, any>>(
   loader: () => Promise<T>,
   name: keyof T
 ) => lazy(async () =>

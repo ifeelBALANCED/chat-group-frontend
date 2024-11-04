@@ -1,15 +1,15 @@
-import { A } from '@solidjs/router';
+import { Link } from 'react-router-dom';
 
 export const NotFoundPage = () => (
-  <div class='min-h-screen flex items-center justify-center bg-base-200'>
-    <div class='text-center'>
-      <h1 class='text-6xl font-bold text-primary mb-4'>404</h1>
-      <p class='text-2xl mb-4'>Oops! Page not found.</p>
-      <p class='mb-8'>The page you're looking for doesn't exist or has been moved.</p>
+  <div className='min-h-screen flex items-center justify-center bg-base-200'>
+    <div className='text-center'>
+      <h1 className='text-6xl font-bold text-primary mb-4'>404</h1>
+      <p className='text-2xl mb-4'>Oops! Page not found.</p>
+      <p className='mb-8'>The page you're looking for doesn't exist or has been moved.</p>
 
-      <A href='/' class='btn btn-primary'>
+      <Link to='/' className='btn btn-primary'>
         Go Back Home
-      </A>
+      </Link>
     </div>
   </div>
 );

@@ -1,0 +1,1 @@
+export { ChatGroupsList } from './chat-groups-list';

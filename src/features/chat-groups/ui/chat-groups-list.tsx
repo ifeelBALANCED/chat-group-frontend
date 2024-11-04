@@ -1,0 +1,1 @@
+export const ChatGroupsList = () => <div>ChatGroupsList</div>;

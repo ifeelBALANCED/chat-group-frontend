@@ -1,0 +1,1 @@
+export const Loader = () => <span className='loading loading-ring loading-lg'></span>;
