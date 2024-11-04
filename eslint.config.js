@@ -25,7 +25,7 @@ export default [
       'eslint.config.js',
       '.commitlintrc.ts',
       'tailwind.config.js',
-      'postcss.config.js',
+      'postcss.config.cjs',
       'vite.config.ts',
       'env.d.ts'
     ]
