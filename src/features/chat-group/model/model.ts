@@ -7,6 +7,7 @@ import { ChatGroupGate, NewChatModalGate } from '@/entities/chat-group';
 import { $chatGroups } from '@/entities/chat-groups';
 import { redirectFx } from '@/shared/router';
 import { createChatGroupHandler } from './create';
+import { persist } from 'effector-storage/local';
 
 export const sidebarVisibilityApi = createBooleanStore();
 
@@ -26,7 +27,7 @@ const userHandler = createWebSocketHandler({
 });
 
 export const $searchableMembers = userHandler.$data.map((users) => users.map((user) => ({
-  id: user.uuid,
+  id: user.user_uuid,
   label: user.email,
   value: user.email
 })));
@@ -62,4 +63,9 @@ sample({
   filter: Boolean,
   fn: () => '/chat-groups',
   target: redirectFx
+});
+
+persist({
+  store: sidebarVisibilityApi.$value,
+  key: 'sidebarOpened'
 });

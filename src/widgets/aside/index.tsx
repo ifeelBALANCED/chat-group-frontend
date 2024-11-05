@@ -1,23 +1,33 @@
-import { useGate, useList, useUnit } from 'effector-react';
-import { useNavigate } from 'react-router-dom';
+import { useGate, useUnit } from 'effector-react';
 import { $chatGroups, ChatGroupsGate, chatGroupsHandler } from '@/entities/chat-groups';
 import { chatGroupModel, CreateNewChatButton } from '@/features/chat-group';
 import { Loader } from '@/shared/ui/loader';
 import classNames from 'classnames';
 import { Icon } from '@/shared/ui/icon';
 import { SafeView } from '@/shared/ui/safe-view';
+import { $activeChatGroup, newActiveGroupSet } from '@/entities/chat-group';
+import { useNavigate } from 'react-router-dom';
+import { ChatGroupsList } from '@/features/chat-groups';
 
 export const Aside = () =>
 {
   useGate(ChatGroupsGate);
 
-  const [isSidebarOpen, onSidebarChange, isLoading] = useUnit([
+  const navigate = useNavigate();
+  const [isSidebarOpen, onSidebarChange, isLoading, chatGroups, activeChatGroup, setActiveGroup] = useUnit([
     chatGroupModel.sidebarVisibilityApi.$value,
     chatGroupModel.sidebarVisibilityApi.toggle,
-    chatGroupsHandler.$loading
+    chatGroupsHandler.$loading,
+    $chatGroups,
+    $activeChatGroup,
+    newActiveGroupSet
   ]);
 
-  const navigate = useNavigate();
+  const handleHomeReturn = () =>
+  {
+    setActiveGroup(null);
+    navigate('/chat-groups');
+  };
 
   return (
     <aside
@@ -27,7 +37,9 @@ export const Aside = () =>
       })}
     >
       <div className='h-full w-[300px] flex flex-col'>
-        <nav className='flex h-[60px] items-center justify-between px-3 md:h-[3.5rem]'>
+        <nav
+          className={classNames('flex h-[60px] justify-between items-center px-3 md:h-[3.5rem]')}
+        >
           <button
             aria-label='Close sidebar'
             data-testid='close-sidebar-button'
@@ -36,6 +48,11 @@ export const Aside = () =>
           >
             <Icon name='sprite/panel' fontSize={24} className='icon-xl-heavy max-md:hidden' />
           </button>
+          <SafeView for={activeChatGroup} otherwise={null}>
+            <div className='flex'>
+              <Icon name={'sprite/home'} fontSize={24} onClick={handleHomeReturn} />
+            </div>
+          </SafeView>
           <CreateNewChatButton />
         </nav>
 
@@ -45,22 +62,9 @@ export const Aside = () =>
               <Loader />
             </div>
           </SafeView>
-          <div className='p-3 space-y-2'>
-            {useList($chatGroups, (chatGroup) => (
-              <button
-                key={chatGroup.uuid}
-                onClick={() => navigate(`/chat-groups/${chatGroup.uuid}`)}
-                className='w-full p-3 rounded-lg hover:bg-gray-50 transition-colors group relative flex flex-col gap-1'
-              >
-                <div className='flex items-center justify-between'>
-                  <span className='font-medium text-gray-900 text-sm truncate pr-4'>
-                    {chatGroup.display_name}
-                  </span>
-                </div>
-                <div className='absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r opacity-0 group-hover:opacity-100 transition-opacity' />
-              </button>
-            ))}
-          </div>
+          <SafeView for={!isLoading && chatGroups.length > 0} otherwise={null}>
+            <ChatGroupsList />
+          </SafeView>
         </div>
       </div>
     </aside>

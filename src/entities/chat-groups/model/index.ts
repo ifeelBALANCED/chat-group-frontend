@@ -2,7 +2,7 @@ import { createWebSocketHandler } from '@/shared/lib/create-websocket-handler';
 import { ChatGroup, WebSocketAction } from '@/shared/types';
 import { createGate } from 'effector-react';
 import { sample } from 'effector';
-import { once } from 'patronum';
+import { persist } from 'effector-storage/local';
 
 export const ChatGroupsGate = createGate();
 
@@ -16,6 +16,11 @@ export const chatGroupsHandler = createWebSocketHandler({
 export const $chatGroups = chatGroupsHandler.$data;
 
 sample({
-  clock: once(ChatGroupsGate.open),
+  source: ChatGroupsGate.open,
   target: chatGroupsHandler.start
+});
+
+persist({
+  store: $chatGroups,
+  key: 'chatGroups'
 });

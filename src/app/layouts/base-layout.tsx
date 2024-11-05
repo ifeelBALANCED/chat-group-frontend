@@ -38,7 +38,7 @@ export const BaseLayout = ({ children }: BaseLayoutProps) =>
                 <div className='relative h-full'>
                   <div className='h-full overflow-y-auto w-full'>
                     <div className='flex flex-col text-sm h-full'>
-                      <div className='shadow-md sticky top-0 p-3 mb-1.5 flex items-center justify-between z-10 h-[3.5rem] font-semibold max-md:hidden'>
+                      <div className='bg-white shadow-md sticky top-0 p-3 mb-1.5 flex items-center justify-between z-10 h-[3.5rem] font-semibold max-md:hidden'>
                         <SafeView for={!isSidebarOpen} otherwise={null}>
                           <OpenSidePanelButton onClick={onSidebarChange} />
                         </SafeView>

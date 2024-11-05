@@ -7,7 +7,8 @@ export const enum WebSocketAction {
   SEND_MESSAGE = 'SEND_MESSAGE',
   GET_CHAT_MESSAGES = 'GET_CHAT_MESSAGES',
   ME = 'ME',
-  GET_USERS = 'GET_USERS'
+  GET_USERS = 'GET_USERS',
+  NEW_MESSAGE_RECEIVED = 'NEW_MESSAGE_RECEIVED'
 }
 
 export type ConnectionStatus = 'connected' | 'disconnected' | 'connecting';

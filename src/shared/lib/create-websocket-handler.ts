@@ -69,7 +69,7 @@ export const createWebSocketHandler = <T, P = void>({
 
   sample({
     clock: socketConnection.messageReceived,
-    filter: (message: WebSocketMessage): message is WebSocketSuccessMessage => isWebSocketMessageOk(message) && filterMessage(message),
+    filter: (message: WebSocketMessage): message is WebSocketSuccessMessage => isWebSocketMessageOk(message) && message.action === action && filterMessage(message),
     fn: (message) => transformData(message.data),
     target: $data
   });
@@ -102,7 +102,7 @@ export const createWebSocketHandler = <T, P = void>({
   };
 };
 
-export const createWebSocketHandlerWithData = <T, P extends Record<string, unknown>>({
+export const createWebSocketHandlerWithData = <T, P>({
   action,
   initialState,
   transformPayload,

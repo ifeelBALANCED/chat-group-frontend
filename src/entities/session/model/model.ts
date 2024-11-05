@@ -1,8 +1,10 @@
 import { socketConnection } from '@/shared/lib/create-socket-connection';
 import { createStore, sample } from 'effector';
 import { persist } from 'effector-storage/local';
+import { User } from '@/shared/types';
 
 export const $token = createStore<string | null>(null);
+export const $user = createStore<User | null>(null);
 export const $isAuthenticated = createStore(false);
 
 sample({
@@ -17,6 +19,11 @@ sample({
 persist({
   store: $token,
   key: 'token'
+});
+
+persist({
+  store: $user,
+  key: 'user'
 });
 
 persist({

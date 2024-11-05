@@ -6,18 +6,27 @@ import {
   WebSocketMessage,
   WebSocketSuccessMessage
 } from '@/shared/lib/create-socket-connection';
-import { LoginDto, RegisterDto, WebSocketAction } from '@/shared/types';
+import {
+  LoginDto, RegisterDto, User, WebSocketAction
+} from '@/shared/types';
 import { combineEvents } from 'patronum';
 import { isWebSocketMessageError, isWebSocketMessageOk } from '@/shared/lib/type-guard';
 import { AnyFormValues, Form } from 'effector-forms';
 import { sessionModel } from '@/entities/session';
-import { isEmpty } from 'lodash';
+import { createWebSocketHandler } from '@/shared/lib/create-websocket-handler';
 
 export const logoutClicked = createEvent('logout clicked');
 export const clearCredentialsFx = createEffect(() =>
 {
   // window.location.reload();
   window.localStorage.clear();
+});
+
+export const userHandler = createWebSocketHandler({
+  action: WebSocketAction.ME,
+  initialState: {} as User,
+  transformData: (user) => user,
+  withToken: true
 });
 
 const handleWebSocketFormAction = <T extends AnyFormValues>(
@@ -70,13 +79,21 @@ sample({
 
 sample({
   clock: socketConnection.messageReceived,
-  filter: (payload: WebSocketMessage): payload is WebSocketSuccessMessage => isWebSocketMessageOk(payload) && !isEmpty(payload.data.access_token),
+  filter: (payload: WebSocketMessage): payload is WebSocketSuccessMessage => isWebSocketMessageOk(payload) && Boolean(payload.data.access_token),
   fn: (message) => message.data.access_token,
-  target: [sessionModel.$token, loginForm.reset, registerForm.reset]
+  target: [sessionModel.$token, userHandler.start, loginForm.reset, registerForm.reset]
+});
+
+sample({
+  clock: userHandler.$data,
+  filter: Boolean,
+  target: sessionModel.$user
 });
 
 sample({
   clock: logoutClicked,
-  fn: () => ({ action: WebSocketAction.LOGOUT }),
+  source: sessionModel.$token,
+  filter: Boolean,
+  fn: (token) => ({ action: WebSocketAction.LOGOUT, data: { token } }),
   target: [socketConnection.handleSentMessageFx, clearCredentialsFx, sessionModel.$token.reinit]
 });

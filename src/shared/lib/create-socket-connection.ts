@@ -74,7 +74,6 @@ export const createSocketConnection = (connectionUrl: string, options: SocketOpt
         try
         {
           const data = JSON.parse(event.data || '{}') as WebSocketMessage;
-          console.log('data', data);
           messageReceived(data);
         }
         catch

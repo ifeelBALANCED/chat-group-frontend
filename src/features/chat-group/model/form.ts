@@ -16,3 +16,12 @@ export const searchUserForm = createForm<{ user: string }>({
   },
   validateOn: ['submit', 'change']
 });
+
+export const createChatMessageForm = createForm<{ content: string }>({
+  fields: {
+    content: {
+      init: ''
+    }
+  },
+  validateOn: ['submit', 'change']
+});
