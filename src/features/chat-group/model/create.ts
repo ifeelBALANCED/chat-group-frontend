@@ -6,11 +6,9 @@ import { ChatGroup, WebSocketAction } from '@/shared/types';
 import { sample } from 'effector';
 import { createChatMessageForm, searchUserForm } from '@/features/chat-group/model/form';
 import { redirectFx } from '@/shared/router';
-import { ChatGroupGate, chatMessagesHandler, newChatModalApi } from '@/entities/chat-group';
+import { $chatGroupMessages, ChatGroupGate, newChatModalApi } from '@/entities/chat-group';
 import { chatGroupsHandler } from '@/entities/chat-groups';
 import { ChatGroupMessage } from '@/shared/types/chat.types';
-import { sessionModel } from '@/entities/session';
-import { spread } from 'patronum';
 import { socketConnection, WebSocketSuccessMessage } from '@/shared/lib/create-socket-connection';
 
 export const createChatGroupHandler = createWebSocketHandlerWithData({
@@ -47,38 +45,30 @@ sample({
   clock: createChatMessageForm.formValidated,
   source: {
     values: createChatMessageForm.$values,
-    uuid: ChatGroupGate.state.map((state) => state.id),
-    token: sessionModel.$token
+    uuid: ChatGroupGate.state.map((state) => state.id)
   },
   filter: ({ values, uuid }) => Boolean(values.content && uuid),
-  fn: ({ uuid, values, token }) => ({
-    createChatMessage: {
-      chat_uuid: String(uuid),
-      content: values.content
-    },
-    chatMessages: {
-      chat_uuid: String(uuid),
-      token: String(token)
-    }
+  fn: ({ uuid, values }) => ({
+    chat_uuid: String(uuid),
+    content: values.content
   }),
-  target: [
-    createChatMessageForm.reset,
-    spread({
-      createChatMessage: createChatMessageHandler.start,
-      chatMessages: chatMessagesHandler.start
-    })
-  ]
+  target: [createChatMessageForm.reset, createChatMessageHandler.start]
+});
+
+sample({
+  clock: createChatMessageHandler.$data,
+  source: $chatGroupMessages,
+  filter: Boolean,
+  fn: (messages, message) => [...messages, message],
+  target: $chatGroupMessages
 });
 
 sample({
   clock: socketConnection.messageReceived,
-  source: sessionModel.$token,
+  source: $chatGroupMessages,
   filter: (_, message) => message.action === WebSocketAction.NEW_MESSAGE_RECEIVED && Object.hasOwn(message, 'data'),
-  fn: (token, message) => ({
-    chat_uuid: String((message as WebSocketSuccessMessage).data.chat_uuid),
-    token: String(token)
-  }),
-  target: chatMessagesHandler.start
+  fn: (messages, message) => [...messages, (message as WebSocketSuccessMessage).data],
+  target: $chatGroupMessages
 });
 
 sample({

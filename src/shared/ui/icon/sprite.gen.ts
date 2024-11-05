@@ -1,5 +1,12 @@
 export interface SpritesMap {
-  sprite: 'close' | 'home' | 'logout' | 'new-chat-icon' | 'panel' | 'send-request-icon';
+  sprite:
+    | 'arrow-down'
+    | 'close'
+    | 'home'
+    | 'logout'
+    | 'new-chat-icon'
+    | 'panel'
+    | 'send-request-icon';
 }
 export const SPRITES_META: {
   [Key in keyof SpritesMap]: {
@@ -15,8 +22,13 @@ export const SPRITES_META: {
   };
 } = {
   sprite: {
-    filePath: 'sprite.5d1b522b.svg',
+    filePath: 'sprite.5f2e92b8.svg',
     items: {
+      'arrow-down': {
+        viewBox: '0 0 512 512',
+        width: 24,
+        height: 24
+      },
       close: {
         viewBox: '0 0 24 24',
         width: 24,
