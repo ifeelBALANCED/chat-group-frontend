@@ -8,15 +8,39 @@ import { Icon } from '@/shared/ui/icon';
 import { newChatModalApi } from '@/entities/chat-group';
 import { Aside } from '@/widgets/aside';
 import { SafeView } from '@/shared/ui/safe-view';
+import { sessionModel } from '@/entities/session';
 
 type BaseLayoutProps = {
   children?: ReactNode;
 };
 
+const Avatar = () =>
+{
+  const [onLogout, user] = useUnit([authModel.logoutClicked, sessionModel.$user]);
+  return (
+    <div className='avatar-container flex items-center gap-2 ml-auto'>
+      <div className='avatar online placeholder'>
+        <div className='bg-neutral text-neutral-content w-8 h-8 rounded-full'>
+          <span>{user?.email?.charAt(0).toUpperCase()}</span>
+        </div>
+      </div>
+      <div className='user-info'>
+        <div className='text-xs font-semibold'>{user?.email}</div>
+        <div className='text-token-text-secondary text-xs'>Online</div>
+      </div>
+      <button
+        onClick={onLogout}
+        className='ml-auto rounded-lg px-2 text-token-text-secondary focus-visible:outline-0 disabled:text-token-text-quaternary focus-visible:bg-token-sidebar-surface-secondary enabled:hover:bg-token-sidebar-surface-secondary'
+      >
+        <Icon name='sprite/logout' fontSize={24} />
+      </button>
+    </div>
+  );
+};
+
 export const BaseLayout = ({ children }: BaseLayoutProps) =>
 {
-  const [onLogout, isSidebarOpen, onSidebarChange, isModalOpen] = useUnit([
-    authModel.logoutClicked,
+  const [isSidebarOpen, onSidebarChange, isModalOpen] = useUnit([
     chatGroupModel.sidebarVisibilityApi.$value,
     chatGroupModel.sidebarVisibilityApi.toggle,
     newChatModalApi.$modal
@@ -42,12 +66,7 @@ export const BaseLayout = ({ children }: BaseLayoutProps) =>
                         <SafeView for={!isSidebarOpen} otherwise={null}>
                           <OpenSidePanelButton onClick={onSidebarChange} />
                         </SafeView>
-                        <button
-                          onClick={onLogout}
-                          className='ml-auto rounded-lg px-2 text-token-text-secondary focus-visible:outline-0 disabled:text-token-text-quaternary focus-visible:bg-token-sidebar-surface-secondary enabled:hover:bg-token-sidebar-surface-secondary'
-                        >
-                          <Icon name='sprite/logout' fontSize={24} />
-                        </button>
+                        <Avatar />
                       </div>
                       <div className='flex flex-1'>{children}</div>
                       <Outlet />
