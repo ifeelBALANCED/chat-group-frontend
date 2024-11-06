@@ -6,10 +6,16 @@ import { ChatGroup, WebSocketAction } from '@/shared/types';
 import { sample } from 'effector';
 import { createChatMessageForm, searchUserForm } from '@/features/chat-group/model/form';
 import { redirectFx } from '@/shared/router';
-import { $chatGroupMessages, ChatGroupGate, newChatModalApi } from '@/entities/chat-group';
+import {
+  $activeChatGroup,
+  $chatGroupMessages,
+  ChatGroupGate,
+  newChatModalApi
+} from '@/entities/chat-group';
 import { chatGroupsHandler } from '@/entities/chat-groups';
 import { ChatGroupMessage } from '@/shared/types/chat.types';
 import { socketConnection, WebSocketSuccessMessage } from '@/shared/lib/create-socket-connection';
+import { spread } from 'patronum';
 
 export const createChatGroupHandler = createWebSocketHandlerWithData({
   action: WebSocketAction.CREATE_CHAT,
@@ -94,8 +100,14 @@ sample({
 sample({
   clock: newChatModalApi.modalClosed,
   source: chatGroupCreated,
-  fn: (chatGroup) => `/chat-groups/${chatGroup.uuid}`,
-  target: redirectFx
+  fn: (chatGroup) => ({
+    redirect: `/chat-groups/${chatGroup.uuid}`,
+    activeChat: chatGroup.uuid
+  }),
+  target: spread({
+    redirect: redirectFx,
+    activeChat: $activeChatGroup
+  })
 });
 
 sample({
