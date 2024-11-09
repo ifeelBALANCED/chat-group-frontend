@@ -2,6 +2,7 @@ export interface SpritesMap {
   sprite:
     | 'arrow-down'
     | 'close'
+    | 'emoji'
     | 'home'
     | 'logout'
     | 'new-chat-icon'
@@ -22,7 +23,7 @@ export const SPRITES_META: {
   };
 } = {
   sprite: {
-    filePath: 'sprite.5f2e92b8.svg',
+    filePath: 'sprite.e98292f0.svg',
     items: {
       'arrow-down': {
         viewBox: '0 0 512 512',
@@ -30,6 +31,11 @@ export const SPRITES_META: {
         height: 24
       },
       close: {
+        viewBox: '0 0 24 24',
+        width: 24,
+        height: 24
+      },
+      emoji: {
         viewBox: '0 0 24 24',
         width: 24,
         height: 24

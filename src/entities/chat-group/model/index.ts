@@ -3,7 +3,7 @@ import { createGate } from 'effector-react';
 import { createWebSocketHandler } from '@/shared/lib/create-websocket-handler';
 import { WebSocketAction } from '@/shared/types';
 import { ChatGroupMessage } from '@/shared/types/chat.types';
-import { createEvent, restore, sample } from 'effector';
+import { createEvent, createStore, sample } from 'effector';
 import { sessionModel } from '@/entities/session';
 import { persist } from 'effector-storage/local';
 
@@ -14,7 +14,7 @@ type ChatMessagesPayload = {
 
 export const newActiveGroupSet = createEvent<string | null>('new active group set');
 export const newChatModalApi = createModalApi();
-export const $activeChatGroup = restore(newActiveGroupSet, null);
+export const $activeChatGroup = createStore<string | null>(null);
 export const NewChatModalGate = createGate('new chat modal');
 export const ChatGroupGate = createGate<{ id?: string }>('chat group');
 
@@ -31,6 +31,12 @@ export const chatMessagesHandler = createWebSocketHandler<ChatGroupMessage[], Ch
 export const $chatGroupMessages = chatMessagesHandler.$data;
 
 sample({
+  clock: newActiveGroupSet,
+  filter: Boolean,
+  target: $activeChatGroup
+});
+
+sample({
   clock: ChatGroupGate.state,
   source: {
     token: sessionModel.$token,
@@ -42,6 +48,12 @@ sample({
     chat_uuid: String(uuid)
   }),
   target: chatMessagesHandler.start
+});
+
+sample({
+  clock: ChatGroupGate.state,
+  filter: (chat) => !chat.id,
+  target: $activeChatGroup.reinit
 });
 
 persist({

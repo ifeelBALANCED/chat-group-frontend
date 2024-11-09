@@ -74,9 +74,9 @@ export const ChatGroupPage = () =>
   return (
     <div className='flex flex-col h-[calc(100%_-_70px)]'>
       <div ref={containerRef} className='flex-1 overflow-y-auto p-4'>
-        {map(chatGroupMessages, (message) => (
+        {map(chatGroupMessages, (message, chatIdx) => (
           <ChatMessage
-            key={message.chat_uuid}
+            key={chatIdx}
             message={message}
             isCurrentUser={user?.user_uuid === message.sender_uuid}
           />
