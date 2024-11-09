@@ -14,6 +14,7 @@ export const SendChatMessageForm = () =>
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const emojiButtonRef = useRef<HTMLButtonElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isSending = useUnit(chatGroupModel.createChatMessageHandler.$loading);
   const {
@@ -45,8 +46,31 @@ export const SendChatMessageForm = () =>
 
   const handleEmojiSelect = (emoji: any) =>
   {
-    fields.content.onChange(fields.content.value + emoji.native);
-    setIsEmojiPickerOpen(false);
+    const textarea = textareaRef.current;
+    if(textarea)
+    {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const currentValue = fields.content.value;
+
+      // Insert emoji at cursor position or at the end if no selection
+      const newValue = currentValue.substring(0, start) + emoji.native + currentValue.substring(end);
+
+      fields.content.onChange(newValue);
+
+      // Restore focus and move cursor after the inserted emoji
+      requestAnimationFrame(() =>
+      {
+        textarea.focus();
+        const newCursorPosition = start + emoji.native.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+      });
+    }
+    else
+    {
+      // Fallback if textarea ref is not available
+      fields.content.onChange(fields.content.value + emoji.native);
+    }
   };
 
   useEffect(() =>
@@ -70,6 +94,7 @@ export const SendChatMessageForm = () =>
       <div className='flex items-center gap-2'>
         <div className='flex-1'>
           <textarea
+            ref={textareaRef}
             value={fields.content.value}
             maxLength={500}
             onChange={(e) => fields.content.onChange(e.target.value)}
